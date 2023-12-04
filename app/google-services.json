@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "495714076358",
+    "project_id": "tusconnected",
+    "storage_bucket": "tusconnected.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:495714076358:android:c7efca4513e8837078b9c7",
+        "android_client_info": {
+          "package_name": "com.example.tusconnected"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDkB82qj8YAQgcZ-p5o6l_8kOapAB5TrdE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
