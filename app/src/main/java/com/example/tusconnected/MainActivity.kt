@@ -12,13 +12,12 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
@@ -28,10 +27,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
@@ -55,7 +52,19 @@ class MainActivity : ComponentActivity() {
                         LoginPage(navController)
                     }
                     composable("TUSHubPage") {
-                        TUSHubPage()
+                        TUSHub(navController)
+                    }
+                    composable("AboutUSPage") {
+                        AboutUs(navController)
+                    }
+                    composable("NewsFeedPage") {
+                        NewsFeed(navController)
+                    }
+                    composable("CampusMapPage") {
+                        NewsFeed(navController)
+                    }
+                    composable("TimetablePage") {
+                        Timetable(navController)
                     }
                 }
             }
@@ -75,76 +84,72 @@ fun LoginPage(navController: NavController) {
     var kNumberText by remember { mutableStateOf("") }
     var passwordText by remember { mutableStateOf("") }
 
-    Box(modifier = Modifier.fillMaxSize()) {
-        Column(
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color.White)
+            .padding(16.dp)
+    ) {
+        Spacer(modifier = Modifier.height(100.dp))
+
+        Text(
+            text = "Login Now",
+            color = Color.Black,
+            style = MaterialTheme.typography.headlineMedium,
             modifier = Modifier
-                .fillMaxSize()
-                .background(Color.White)
-                .padding(16.dp, 16.dp, 16.dp, 0.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
+                .padding(bottom = 8.dp)
+                .align(Alignment.CenterHorizontally)
+        )
+
+        OutlinedTextField(
+            value = kNumberText,
+            onValueChange = { kNumberText = it },
+            label = { Text("KNumber", color = Color.Black) },
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 8.dp)
+        )
+
+        OutlinedTextField(
+            value = passwordText,
+            onValueChange = { passwordText = it },
+            label = { Text("Password", color = Color.Black) },
+            visualTransformation = PasswordVisualTransformation(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 8.dp)
+        )
+
+        Button(
+            onClick = {
+                navController.navigate("TUSHubPage")
+            },
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(50.dp)
         ) {
-            Text(
-                text = "Login Now",
-                color = Color.Black,
-                style = MaterialTheme.typography.headlineMedium,
-            )
-
-            Spacer(modifier = Modifier.padding(bottom = 8.dp))
-
-            OutlinedTextField(
-                value = kNumberText,
-                onValueChange = { kNumberText = it },
-                label = { Text("KNumber", color = Color.Black) }
-            )
-            Spacer(modifier = Modifier.padding(bottom = 8.dp))
-            OutlinedTextField(
-                value = passwordText,
-                onValueChange = { passwordText = it },
-                label = { Text("Password", color = Color.Black) },
-                visualTransformation = PasswordVisualTransformation()
-            )
-            Spacer(modifier = Modifier.padding(bottom = 8.dp))
-            Button(
-                onClick = {
-                    navController.navigate("TUSHubPage")
-                },
-            ) {
-                Text("LOGIN", color = Color.Black)
-            }
-            Text(
-                text = "TUSConnected",
-                color = Color.Black,
-                style = MaterialTheme.typography.headlineMedium,
-                modifier = Modifier.padding(40.dp)
-            )
-            Text(
-                text = "Hope you have a great time",
-                color = Color.Black,
-                style = MaterialTheme.typography.headlineMedium,
-                modifier = Modifier.padding(bottom = 1.dp)
-            )
-
+            Text("LOGIN", color = Color.White)
         }
 
-        Box(modifier = Modifier.fillMaxWidth()) {
-            TopAppBar(
-                title = { Text("Your Title", color = Color.Black) },
-                modifier = Modifier
-                    .background(Color.Black)
-                    .height(120.dp)
-                    .fillMaxWidth()
-                    .padding(200.dp)
-            )
-            val logoImage = painterResource(id = R.drawable.tuslogo)
-            Image(
-                painter = logoImage,
-                contentDescription = "Logo",
-                modifier = Modifier
-                    .align(Alignment.Center)
-                    .scale(0.6f)
-            )
-        }
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Text(
+            text = "TUSConnected",
+            color = Color.Black,
+            style = MaterialTheme.typography.headlineMedium,
+            modifier = Modifier.padding(bottom = 8.dp)
+                .align(Alignment.CenterHorizontally)
+        )
+
+        Text(
+            text = "Hope you have a great time",
+            color = Color.Black,
+            style = MaterialTheme.typography.headlineMedium,
+            modifier = Modifier.padding(bottom = 16.dp)
+                .align(Alignment.CenterHorizontally)
+        )
+
+
 
 //        BottomAppBar(
 //            content = { Text("Your Title", color = Color.White) },
@@ -155,5 +160,34 @@ fun LoginPage(navController: NavController) {
 //                .padding(200.dp)
 //                .align(Alignment.BottomCenter)
 //        )
+    }
+    Box(modifier = Modifier.fillMaxWidth()) {
+        TopAppBar(
+            title = { Text("Your Title", color = Color.Black) },
+            modifier = Modifier
+                .background(Color.LightGray)
+                .height(80.dp)
+                .fillMaxWidth()
+                .padding(100.dp)
+        )
+        val logoImage = painterResource(id = R.drawable.tuslogo)
+        Image(
+            painter = logoImage,
+            contentDescription = "Logo",
+            modifier = Modifier
+                .align(Alignment.CenterStart)
+                .offset(y = -75.dp, x = -150.dp)
+                .scale(0.2f)
+        )
+
+        val accountLogoImage = painterResource(id = R.drawable.accountlogo)
+        Image(
+            painter = accountLogoImage,
+            contentDescription = "Account Logo",
+            modifier = Modifier
+                .align(Alignment.CenterEnd)
+                .offset(y = -75.dp, x = 25.dp)
+                .scale(0.3f)
+        )
     }
 }
