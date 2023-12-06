@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -23,15 +24,22 @@ import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.text.ClickableText
+import androidx.compose.material.icons.Icons
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Snackbar
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -46,6 +54,8 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -73,9 +83,11 @@ class TUSHubPage : ComponentActivity() {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TUSHub(navController: NavController) {
+    var expanded by remember { mutableStateOf("") }
+    var notifications by remember { mutableStateOf(false) }
     Box(modifier = Modifier.fillMaxWidth()) {
         TopAppBar(
-            title = { Text("Your Title", color = Color.Black) },
+            title = { Text("", color = Color.Black) },
             modifier = Modifier
                 .background(Color.LightGray)
                 .height(80.dp)
@@ -101,114 +113,174 @@ fun TUSHub(navController: NavController) {
                 .offset(y = -75.dp, x = 25.dp)
                 .scale(0.3f)
         )
+
+        if (notifications) {
+            Snackbar(
+                action = {
+                    TextButton(onClick = { notifications = false }) {
+                        Text("Dismiss")
+                    }
+                },
+                modifier = Modifier
+                    .align(Alignment.TopCenter)
+                    .padding(100.dp)
+            ) {
+                Text("You have new notifications!")
+            }
+        }
     }
+
 
 //    Box(
 //        modifier = Modifier
 //            .fillMaxSize()
 //            .padding(100.dp),
 //    ) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .offset(y = 120.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
+    Box(
+        modifier = Modifier.fillMaxSize()
     ) {
-        Text(
-            text = "Welcome to the TUSHub",
-            textAlign = TextAlign.Center,
-            color = Color.Black,
-            style = MaterialTheme.typography.headlineLarge,
-        )
-
-        Spacer(modifier = Modifier.padding(bottom = 16.dp))
-
-        val buttonItems = listOf(
-            "TIMETABLE" to "TimetablePage",
-            "CAMPUS MAP" to "CampusMapPage",
-            "NEWS FEED" to "NewsFeedPage",
-            "ABOUT US" to "AboutUSPage"
-        )
-
-        LazyColumn(
-            contentPadding = PaddingValues(16.dp),
-            modifier = Modifier.fillMaxSize(),
-            verticalArrangement = Arrangement.Top
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .offset(y = 120.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            item {
-                LazyRow(
-                    contentPadding = PaddingValues(16.dp),
-                    horizontalArrangement = Arrangement.spacedBy(16.dp),
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    items(buttonItems.take(2)) { (text, destination) ->
-                        Card(
-                            modifier = Modifier
-                                .width(160.dp)
-                                .height(160.dp)
-                                .clickable { navController.navigate(destination) }
-                                .padding(8.dp),
-                        ) {
-                            Image(
-                                painter = painterResource(getImageResourceForText(text)),
-                                contentDescription = null,
+            Text(
+                text = "Welcome to the TUSHub",
+                textAlign = TextAlign.Center,
+                color = Color.Black,
+                style = MaterialTheme.typography.headlineLarge,
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            val buttonItems = listOf(
+                "TIMETABLE" to "TimetablePage",
+                "CAMPUS MAP" to "CampusMapPage",
+                "NEWS FEED" to "NewsFeedPage",
+                "ABOUT US" to "AboutUSPage"
+            )
+
+            LazyColumn(
+                contentPadding = PaddingValues(16.dp),
+                modifier = Modifier.weight(1f),
+                verticalArrangement = Arrangement.Top
+            ) {
+                item {
+                    LazyRow(
+                        contentPadding = PaddingValues(16.dp),
+                        horizontalArrangement = Arrangement.spacedBy(16.dp),
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        items(buttonItems.take(2)) { (text, destination) ->
+                            Card(
                                 modifier = Modifier
-                                    .fillMaxSize(),
-                                contentScale = ContentScale.FillBounds
-//                                    .align(Alignment.Start)
-                            )
+                                    .width(160.dp)
+                                    .height(160.dp)
+                                    .clickable { navController.navigate(destination) }
+                                    .padding(8.dp),
+                            ) {
+                                Image(
+                                    painter = painterResource(getImageResourceForText(text)),
+                                    contentDescription = null,
+                                    modifier = Modifier
+                                        .fillMaxSize(),
+                                    contentScale = ContentScale.FillBounds
+                                )
 
-
-                            Text(
-                                text = text,
-                                color = Color.Black,
-                                textAlign = TextAlign.Center,
-                                style = MaterialTheme.typography.bodyMedium
-                            )
-
-                        }
-                    }
-                        }
-                    }
-
-            item {
-                LazyRow(
-                    contentPadding = PaddingValues(16.dp),
-                    horizontalArrangement = Arrangement.spacedBy(16.dp),
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    items(buttonItems.takeLast(2)) { (text, destination) ->
-                        Card(
-                            modifier = Modifier
-                                .width(160.dp)
-                                .height(160.dp)
-                                .clickable { navController.navigate(destination) }
-                                .padding(8.dp),
-                        ) {
-                            Image(
-                                painter = painterResource(getImageResourceForText(text)),
-                                contentDescription = null,
-                                modifier = Modifier
-                                    .fillMaxSize()
-                                    .align(Alignment.Start),
-                            )
-
-                            Text(
-                                text = text,
-                                color = Color.Black,
-                                textAlign = TextAlign.Center,
-                                style = MaterialTheme.typography.bodyMedium,
-//                                modifier = Modifier.align(Alignment.Bottom)
-                            )
+                                Text(
+                                    text = text,
+                                    color = Color.Black,
+                                    textAlign = TextAlign.Center,
+                                    style = MaterialTheme.typography.bodyMedium
+                                )
+                            }
                         }
                     }
                 }
-            }
-            }
-        }
-    }
 
-fun getImageResourceForText(text: String): Int {
+                item {
+                    LazyRow(
+                        contentPadding = PaddingValues(16.dp),
+                        horizontalArrangement = Arrangement.spacedBy(16.dp),
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        items(buttonItems.takeLast(2)) { (text, destination) ->
+                            Card(
+                                modifier = Modifier
+                                    .width(160.dp)
+                                    .height(160.dp)
+                                    .clickable { navController.navigate(destination) }
+                                    .padding(8.dp),
+                            ) {
+                                Image(
+                                    painter = painterResource(getImageResourceForText(text)),
+                                    contentDescription = null,
+                                    modifier = Modifier
+                                        .fillMaxSize()
+                                        .align(Alignment.Start),
+                                )
+
+                                Text(
+                                    text = text,
+                                    color = Color.Black,
+                                    textAlign = TextAlign.Center,
+                                    style = MaterialTheme.typography.bodyMedium,
+                                )
+                            }
+                        }
+                    }
+                }
+
+                item {
+                    Spacer(modifier = Modifier.height(30.dp))
+                    Button(
+                        onClick = {
+                            navController.navigate("LoginPage")
+                        },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(50.dp)
+                    ) {
+                        Text("Logout", color = Color.White)
+                    }
+                }
+            }
+
+            Spacer(modifier = Modifier.height(100.dp))
+        }
+
+        BottomAppBar(
+            content = { Text("", color = Color.Black) },
+            modifier = Modifier
+                .background(Color.LightGray)
+                .height(80.dp)
+                .fillMaxWidth()
+                .align(Alignment.BottomCenter)
+                .padding(100.dp)
+        )
+
+        val contactUsImage = painterResource(id = R.drawable.contactus)
+        var ifIsClicked by remember { mutableStateOf(false)
+        }
+        Image(
+            painter = contactUsImage,
+            contentDescription = "Contact Us",
+            modifier = Modifier
+                .align(Alignment.Center)
+                .offset(y = 370.dp, x = 0.dp)
+                .height(50.dp)
+                .width(50.dp)
+                .clickable {
+                    ifIsClicked = true
+                    navController.navigate("ContactUsPage")
+                }
+        )
+
+
+    }
+}
+    fun getImageResourceForText(text: String): Int {
     return when (text) {
         "TIMETABLE" -> R.drawable.timetable
         "CAMPUS MAP" -> R.drawable.campusmap

@@ -5,6 +5,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -14,6 +15,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
@@ -21,6 +24,10 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
@@ -83,7 +90,7 @@ fun NewsFeed(navController: NavHostController) {
 
     Box(
         modifier = Modifier.fillMaxSize()
-            .padding(16.dp, 16.dp, 16.dp, 0.dp),
+//            .padding(16.dp, 16.dp, 16.dp, 0.dp),
     ) {
         Column(
             modifier = Modifier
@@ -112,7 +119,37 @@ fun NewsFeed(navController: NavHostController) {
             ) {
                 Text("TUS HUB")
             }
+
+            Spacer(modifier = Modifier.height(100.dp))
         }
+
+        BottomAppBar(
+            content = { Text("", color = Color.Black) },
+            modifier = Modifier
+                .background(Color.LightGray)
+                .height(80.dp)
+                .fillMaxWidth()
+                .align(Alignment.BottomCenter)
+                .padding(100.dp)
+        )
+
+        val contactUsImage = painterResource(id = R.drawable.contactus)
+        var ifIsClicked by remember {
+            mutableStateOf(false)
+        }
+        Image(
+            painter = contactUsImage,
+            contentDescription = "Contact Us",
+            modifier = Modifier
+                .align(Alignment.Center)
+                .offset(y = 370.dp, x = 0.dp)
+                .height(50.dp)
+                .width(50.dp)
+                .clickable {
+                    ifIsClicked = true
+                    navController.navigate("ContactUsPage")
+                }
+        )
     }
 }
 

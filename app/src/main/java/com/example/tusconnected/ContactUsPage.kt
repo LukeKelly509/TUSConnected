@@ -27,7 +27,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.tusconnected.ui.theme.TUSConnectedTheme
 
-class TimetablePage : ComponentActivity() {
+class ContactUsPage : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -37,7 +37,7 @@ class TimetablePage : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    Timetable(navController)
+                    ContactUs(navController)
                 }
             }
         }
@@ -46,7 +46,7 @@ class TimetablePage : ComponentActivity() {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Timetable(navController: NavHostController) {
+fun ContactUs(navController: NavHostController) {
     Box(modifier = Modifier.fillMaxWidth()) {
         TopAppBar(
             title = { Text("", color = Color.Black) },
@@ -76,5 +76,6 @@ fun Timetable(navController: NavHostController) {
                 .scale(0.3f)
         )
     }
-}
 
+
+}

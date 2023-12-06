@@ -1,42 +1,33 @@
 package com.example.tusconnected
 
-import androidx.compose.foundation.Image
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Button
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.ClickableText
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.tusconnected.ui.theme.TUSConnectedTheme
+import com.google.firebase.auth.FirebaseAuth
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -66,31 +57,41 @@ class MainActivity : ComponentActivity() {
                     composable("TimetablePage") {
                         Timetable(navController)
                     }
+                    composable("SignUpPage") {
+                        SignUp(navController)
+                    }
+                    composable("ForgotPasswordPage") {
+                        ForgotPassword(navController)
+                    }
+                    composable("ContactUsPage") {
+                        ContactUs(navController)
+                    }
                 }
             }
         }
     }
 }
 
-    @Composable
-    private fun navigateToTUSHubPage() {
-        val navController = rememberNavController()
-        navController.navigate("TUSHubPage")
-    }
+@Composable
+private fun navigateToTUSHubPage(navController: NavController) {
+    navController.navigate("TUSHubPage")
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LoginPage(navController: NavController) {
-    var kNumberText by remember { mutableStateOf("") }
-    var passwordText by remember { mutableStateOf("") }
+    var email by remember { mutableStateOf("") }
+    var password by remember { mutableStateOf("") }
+    var errorMessage by remember { mutableStateOf("") }
 
     Column(
         modifier = Modifier
             .fillMaxSize()
             .background(Color.White)
+            .verticalScroll(rememberScrollState())
             .padding(16.dp)
     ) {
-        Spacer(modifier = Modifier.height(100.dp))
+        Spacer(modifier = Modifier.height(200.dp))
 
         Text(
             text = "Login Now",
@@ -102,17 +103,17 @@ fun LoginPage(navController: NavController) {
         )
 
         OutlinedTextField(
-            value = kNumberText,
-            onValueChange = { kNumberText = it },
-            label = { Text("KNumber", color = Color.Black) },
+            value = email,
+            onValueChange = { email = it },
+            label = { Text("Email", color = Color.Black) },
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(bottom = 8.dp)
         )
 
         OutlinedTextField(
-            value = passwordText,
-            onValueChange = { passwordText = it },
+            value = password,
+            onValueChange = { password = it },
             label = { Text("Password", color = Color.Black) },
             visualTransformation = PasswordVisualTransformation(),
             modifier = Modifier
@@ -120,9 +121,20 @@ fun LoginPage(navController: NavController) {
                 .padding(bottom = 8.dp)
         )
 
+        Text(
+            text = errorMessage,
+            color = Color.Red,
+            modifier = Modifier.padding(bottom = 8.dp)
+        )
+
         Button(
             onClick = {
-                navController.navigate("TUSHubPage")
+//                if (isValidLogin(email, password)) {
+//                    navController.navigate("TUSHubPage")
+//                } else {
+//                    errorMessage = "Invalid email or password"
+//                }
+                      navController.navigate("TUSHubPage")
             },
             modifier = Modifier
                 .fillMaxWidth()
@@ -131,39 +143,34 @@ fun LoginPage(navController: NavController) {
             Text("LOGIN", color = Color.White)
         }
 
+        ClickableText(
+            text = AnnotatedString("Sign Up"),
+            onClick = {
+                navController.navigate("SignUpPage")
+            },
+            modifier = Modifier
+                .padding(top = 8.dp)
+                .align(Alignment.CenterHorizontally),
+            style = TextStyle(color = Color.Blue)
+        )
+
+        ClickableText(
+            text = AnnotatedString("Forgot your password?"),
+            onClick = {
+                navController.navigate("ForgotPasswordPage")
+            },
+            modifier = Modifier
+                .padding(top = 8.dp)
+                .align(Alignment.CenterHorizontally),
+            style = TextStyle(color = Color.Blue)
+        )
+
         Spacer(modifier = Modifier.height(16.dp))
-
-        Text(
-            text = "TUSConnected",
-            color = Color.Black,
-            style = MaterialTheme.typography.headlineMedium,
-            modifier = Modifier.padding(bottom = 8.dp)
-                .align(Alignment.CenterHorizontally)
-        )
-
-        Text(
-            text = "Hope you have a great time",
-            color = Color.Black,
-            style = MaterialTheme.typography.headlineMedium,
-            modifier = Modifier.padding(bottom = 16.dp)
-                .align(Alignment.CenterHorizontally)
-        )
-
-
-
-//        BottomAppBar(
-//            content = { Text("Your Title", color = Color.White) },
-//            modifier = Modifier
-//                .background(Color.Black)
-//                .height(80.dp)
-//                .fillMaxWidth()
-//                .padding(200.dp)
-//                .align(Alignment.BottomCenter)
-//        )
     }
+
     Box(modifier = Modifier.fillMaxWidth()) {
         TopAppBar(
-            title = { Text("Your Title", color = Color.Black) },
+            title = { Text("", color = Color.Black) },
             modifier = Modifier
                 .background(Color.LightGray)
                 .height(80.dp)
@@ -191,3 +198,15 @@ fun LoginPage(navController: NavController) {
         )
     }
 }
+
+//fun isValidLogin(email: String, password: String): Boolean {
+//    return isEmailValid(email) && isPasswordLoginValid(password)
+//}
+//
+//fun isEmailValid(email: String): Boolean {
+//    return email.isNotEmpty() && android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()
+//}
+//
+//fun isPasswordLoginValid(password: String): Boolean {
+//    return password.isNotEmpty() && password.length > 5
+//}
