@@ -37,6 +37,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.tusconnected.ui.theme.TUSConnectedTheme
+import com.google.firebase.auth.FirebaseAuth
 
 class NewsFeedPage : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -58,6 +59,7 @@ class NewsFeedPage : ComponentActivity() {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun NewsFeed(navController: NavHostController) {
+    val firebase = FirebaseAuth.getInstance()
     Box(modifier = Modifier.fillMaxWidth()) {
         TopAppBar(
             title = { Text("", color = Color.Black) },
@@ -67,14 +69,20 @@ fun NewsFeed(navController: NavHostController) {
                 .fillMaxWidth()
                 .padding(100.dp)
         )
-        val logoImage = painterResource(id = R.drawable.tuslogo)
+        val backButton = painterResource(id = R.drawable.backbutton)
+        var ifIsClicked by remember { mutableStateOf(false)
+        }
         Image(
-            painter = logoImage,
-            contentDescription = "Logo",
+            painter = backButton,
+            contentDescription = "Back Button",
             modifier = Modifier
                 .align(Alignment.CenterStart)
-                .offset(y = -75.dp, x = -150.dp)
-                .scale(0.2f)
+                .offset(y = -32.dp, x = -35.dp)
+                .scale(0.3f)
+                .clickable(){
+                    ifIsClicked = true
+                    navController.navigate("TUSHubPage")
+                }
         )
 
         val accountLogoImage = painterResource(id = R.drawable.accountlogo)
@@ -83,7 +91,7 @@ fun NewsFeed(navController: NavHostController) {
             contentDescription = "Account Logo",
             modifier = Modifier
                 .align(Alignment.CenterEnd)
-                .offset(y = -75.dp, x = 25.dp)
+                .offset(y = -33.dp, x = 25.dp)
                 .scale(0.3f)
         )
     }
@@ -113,14 +121,6 @@ fun NewsFeed(navController: NavHostController) {
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            Button(
-                onClick = { navController.navigate("TUSHubPage") },
-                modifier = Modifier.align(Alignment.CenterHorizontally)
-            ) {
-                Text("TUS HUB")
-            }
-
-            Spacer(modifier = Modifier.height(100.dp))
         }
 
         BottomAppBar(
@@ -134,7 +134,6 @@ fun NewsFeed(navController: NavHostController) {
         )
 
         val contactUsImage = painterResource(id = R.drawable.contactus)
-        val picturesImage = painterResource(id = R.drawable.pictures)
         val groupchatImage = painterResource(id = R.drawable.groupchat)
         var ifIsClicked by remember { mutableStateOf(false)
         }
@@ -153,17 +152,20 @@ fun NewsFeed(navController: NavHostController) {
                 }
         )
 
+        val logoutImage = painterResource(id = R.drawable.logout)
+        var ifClicked by remember { mutableStateOf(false) }
         Image(
-            painter = picturesImage,
-            contentDescription = "Pictures",
+            painter = logoutImage,
+            contentDescription = "Logout Image",
             modifier = Modifier
-                .align(Alignment.Center)
-                .offset(y = 370.dp, x = 130.dp)
-                .height(45.dp)
-                .width(45.dp)
-                .clickable {
-                    ifIsClicked = true
-                    navController.navigate("PicturesPage")
+                .align(Alignment.CenterEnd)
+                .offset(y = 375.dp, x = -50.dp)
+                .height(60.dp)
+                .width(60.dp)
+                .clickable() {
+                    ifClicked = true
+                    firebase.signOut()
+                    navController.navigate("LoginPage")
                 }
         )
 

@@ -120,20 +120,37 @@ fun TUSHub(navController: NavController) {
                 .scale(0.3f)
         )
 
-        if (notifications) {
-            Snackbar(
-                action = {
-                    TextButton(onClick = { notifications = false }) {
-                        Text("Dismiss")
-                    }
-                },
-                modifier = Modifier
-                    .align(Alignment.TopCenter)
-                    .padding(100.dp)
-            ) {
-                Text("You have new notifications!")
-            }
-        }
+//        val logoutImage = painterResource(id = R.drawable.logout)
+//        var ifClicked by remember { mutableStateOf(false) }
+//        Image(
+//            painter = logoutImage,
+//            contentDescription = "Logout Image",
+//            modifier = Modifier
+//                .align(Alignment.CenterEnd)
+//                .offset(y = -70.dp, x = -30.dp)
+////                .size(50.dp)
+//                .scale(0.4f)
+//                .clickable() {
+//                    ifClicked = true
+//                    firebase.signOut()
+//                    navController.navigate("LoginPage")
+//                }
+//        )
+
+//        if (notifications) {
+//            Snackbar(
+//                action = {
+//                    TextButton(onClick = { notifications = false }) {
+//                        Text("Dismiss")
+//                    }
+//                },
+//                modifier = Modifier
+//                    .align(Alignment.TopCenter)
+//                    .padding(100.dp)
+//            ) {
+//                Text("You have new notifications!")
+//            }
+//        }
     }
 
 
@@ -239,20 +256,20 @@ fun TUSHub(navController: NavController) {
                     }
                 }
 
-                item {
-                    Spacer(modifier = Modifier.height(30.dp))
-                    Button(
-                        onClick = {
-                            firebase.signOut()
-                            navController.navigate("LoginPage")
-                        },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(50.dp)
-                    ) {
-                        Text("Logout", color = Color.White)
-                    }
-                }
+//                item {
+//                    Spacer(modifier = Modifier.height(30.dp))
+//                    Button(
+//                        onClick = {
+//                            firebase.signOut()
+//                            navController.navigate("LoginPage")
+//                        },
+//                        modifier = Modifier
+//                            .fillMaxWidth()
+//                            .height(50.dp)
+//                    ) {
+//                        Text("Logout", color = Color.White)
+//                    }
+//                }
             }
 
             Spacer(modifier = Modifier.height(100.dp))
@@ -288,17 +305,34 @@ fun TUSHub(navController: NavController) {
                 }
         )
 
+//        Image(
+//            painter = picturesImage,
+//            contentDescription = "Pictures",
+//            modifier = Modifier
+//                .align(Alignment.Center)
+//                .offset(y = 370.dp, x = 130.dp)
+//                .height(45.dp)
+//                .width(45.dp)
+//                .clickable {
+//                    ifIsClicked = true
+//                    navController.navigate("PicturesPage")
+//                }
+//        )
+
+        val logoutImage = painterResource(id = R.drawable.logout)
+        var ifClicked by remember { mutableStateOf(false) }
         Image(
-            painter = picturesImage,
-            contentDescription = "Pictures",
+            painter = logoutImage,
+            contentDescription = "Logout Image",
             modifier = Modifier
-                .align(Alignment.Center)
-                .offset(y = 370.dp, x = 130.dp)
-                .height(45.dp)
-                .width(45.dp)
-                .clickable {
-                    ifIsClicked = true
-                    navController.navigate("PicturesPage")
+                .align(Alignment.CenterEnd)
+                .offset(y = 375.dp, x = -50.dp)
+                .height(60.dp)
+                .width(60.dp)
+                .clickable() {
+                    ifClicked = true
+                    firebase.signOut()
+                    navController.navigate("LoginPage")
                 }
         )
 
