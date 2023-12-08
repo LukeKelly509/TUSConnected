@@ -134,9 +134,11 @@ fun NewsFeed(navController: NavHostController) {
         )
 
         val contactUsImage = painterResource(id = R.drawable.contactus)
-        var ifIsClicked by remember {
-            mutableStateOf(false)
+        val picturesImage = painterResource(id = R.drawable.pictures)
+        val groupchatImage = painterResource(id = R.drawable.groupchat)
+        var ifIsClicked by remember { mutableStateOf(false)
         }
+
         Image(
             painter = contactUsImage,
             contentDescription = "Contact Us",
@@ -148,6 +150,34 @@ fun NewsFeed(navController: NavHostController) {
                 .clickable {
                     ifIsClicked = true
                     navController.navigate("ContactUsPage")
+                }
+        )
+
+        Image(
+            painter = picturesImage,
+            contentDescription = "Pictures",
+            modifier = Modifier
+                .align(Alignment.Center)
+                .offset(y = 370.dp, x = 130.dp)
+                .height(45.dp)
+                .width(45.dp)
+                .clickable {
+                    ifIsClicked = true
+                    navController.navigate("PicturesPage")
+                }
+        )
+
+        Image(
+            painter = groupchatImage,
+            contentDescription = "Group Chats",
+            modifier = Modifier
+                .align(Alignment.Center)
+                .offset(y = 370.dp, x = -130.dp)
+                .height(60.dp)
+                .width(60.dp)
+                .clickable {
+                    ifIsClicked = true
+                    navController.navigate("GroupChatPage")
                 }
         )
     }

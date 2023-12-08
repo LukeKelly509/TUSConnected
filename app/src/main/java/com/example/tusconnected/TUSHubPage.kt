@@ -24,7 +24,9 @@ import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.ClickableText
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Button
@@ -62,6 +64,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.tusconnected.ui.theme.TUSConnectedTheme
+import com.google.firebase.auth.FirebaseAuth
 
 class TUSHubPage : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -80,9 +83,12 @@ class TUSHubPage : ComponentActivity() {
     }
 }
 
+
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TUSHub(navController: NavController) {
+    val firebase = FirebaseAuth.getInstance()
     var expanded by remember { mutableStateOf("") }
     var notifications by remember { mutableStateOf(false) }
     Box(modifier = Modifier.fillMaxWidth()) {
@@ -142,6 +148,7 @@ fun TUSHub(navController: NavController) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
+                .verticalScroll(rememberScrollState())
                 .offset(y = 120.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -236,6 +243,7 @@ fun TUSHub(navController: NavController) {
                     Spacer(modifier = Modifier.height(30.dp))
                     Button(
                         onClick = {
+                            firebase.signOut()
                             navController.navigate("LoginPage")
                         },
                         modifier = Modifier
@@ -261,8 +269,11 @@ fun TUSHub(navController: NavController) {
         )
 
         val contactUsImage = painterResource(id = R.drawable.contactus)
+        val picturesImage = painterResource(id = R.drawable.pictures)
+        val groupchatImage = painterResource(id = R.drawable.groupchat)
         var ifIsClicked by remember { mutableStateOf(false)
         }
+
         Image(
             painter = contactUsImage,
             contentDescription = "Contact Us",
@@ -277,6 +288,33 @@ fun TUSHub(navController: NavController) {
                 }
         )
 
+        Image(
+            painter = picturesImage,
+            contentDescription = "Pictures",
+            modifier = Modifier
+                .align(Alignment.Center)
+                .offset(y = 370.dp, x = 130.dp)
+                .height(45.dp)
+                .width(45.dp)
+                .clickable {
+                    ifIsClicked = true
+                    navController.navigate("PicturesPage")
+                }
+        )
+
+        Image(
+            painter = groupchatImage,
+            contentDescription = "Group Chats",
+            modifier = Modifier
+                .align(Alignment.Center)
+                .offset(y = 370.dp, x = -130.dp)
+                .height(60.dp)
+                .width(60.dp)
+                .clickable {
+                    ifIsClicked = true
+                    navController.navigate("GroupChatPage")
+                }
+        )
 
     }
 }

@@ -5,6 +5,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -36,9 +37,12 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 //import androidx.compose.ui.tooling.data.EmptyGroup.name
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.tusconnected.ui.theme.TUSConnectedTheme
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.userProfileChangeRequest
 
 class SignUpPage : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -57,6 +61,7 @@ class SignUpPage : ComponentActivity() {
     }
 }
 
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SignUp(navController: NavHostController) {
@@ -64,6 +69,7 @@ fun SignUp(navController: NavHostController) {
     var nameText by remember { mutableStateOf("") }
     var passwordText by remember { mutableStateOf("") }
     var errorMessage by remember { mutableStateOf("") }
+
 
     Column(
         modifier = Modifier
@@ -96,7 +102,7 @@ fun SignUp(navController: NavHostController) {
             value = kNumberText,
             onValueChange = { kNumberText = it
                             errorMessage = ""},
-            label = { Text("KNumber", color = Color.Black) },
+            label = { Text("Email", color = Color.Black) },
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(bottom = 8.dp)
@@ -122,7 +128,7 @@ fun SignUp(navController: NavHostController) {
         Button(
             onClick = {
                 if (isValidSignUp(nameText, kNumberText, passwordText)) {
-                    navController.navigate("TUSHubPage")
+                    signUpWithNameEmailAndPassword(nameText, kNumberText, passwordText, navController)
                 } else {
                     errorMessage = "Not correct, try again!"
                 }
@@ -134,17 +140,19 @@ fun SignUp(navController: NavHostController) {
             Text("SIGN UP", color = Color.White)
         }
 
+
         Spacer(modifier = Modifier.height(16.dp))
 
-        ClickableText(
-            text = AnnotatedString("Back to Login"),
-            onClick = {
-                navController.popBackStack()
-            },
-            modifier = Modifier
-                .align(Alignment.CenterHorizontally),
-            style = TextStyle(color = Color.Blue)
-        )
+//        ClickableText(
+//            text = AnnotatedString("Back to Login"),
+//            onClick = {
+//                navController.navigate("LoginPage")
+//            },
+//            modifier = Modifier
+//                .align(Alignment.CenterHorizontally),
+//            style = TextStyle(color = Color.Blue)
+//        )
+
 
         Spacer(modifier = Modifier.height(16.dp))
 
@@ -174,14 +182,20 @@ fun SignUp(navController: NavHostController) {
                 .fillMaxWidth()
                 .padding(100.dp)
         )
-        val logoImage = painterResource(id = R.drawable.tuslogo)
+        val backButton = painterResource(id = R.drawable.backbutton)
+        var ifIsClicked by remember { mutableStateOf(false)
+        }
         Image(
-            painter = logoImage,
-            contentDescription = "Logo",
+            painter = backButton,
+            contentDescription = "Back Button",
             modifier = Modifier
                 .align(Alignment.CenterStart)
-                .offset(y = -75.dp, x = -150.dp)
-                .scale(0.2f)
+                .offset(y = -32.dp, x = -35.dp)
+                .scale(0.3f)
+                .clickable(){
+                    ifIsClicked = true
+                    navController.navigate("LoginPage")
+                }
         )
 
         val accountLogoImage = painterResource(id = R.drawable.accountlogo)
@@ -190,7 +204,7 @@ fun SignUp(navController: NavHostController) {
             contentDescription = "Account Logo",
             modifier = Modifier
                 .align(Alignment.CenterEnd)
-                .offset(y = -75.dp, x = 25.dp)
+                .offset(y = -33.dp, x = 25.dp)
                 .scale(0.3f)
         )
     }
@@ -206,9 +220,33 @@ fun isNameValid(name: String): Boolean {
 }
 
 fun isKNumberValid(kNumber: String): Boolean {
-    return kNumber.startsWith("K00") && kNumber.length == 9
+    val regex = Regex("^K00.+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$")
+    return regex.matches(kNumber)
 }
 
 fun isPasswordValid(password: String): Boolean {
     return password.isNotEmpty() && password.length > 5
+}
+
+fun signUpWithNameEmailAndPassword(name: String, email: String, password: String, navController: NavController) {
+    val firebase = FirebaseAuth.getInstance()
+    firebase.createUserWithEmailAndPassword(email, password)
+        .addOnCompleteListener { task ->
+            if (task.isSuccessful) {
+                val user = firebase.currentUser
+                val profileUpdates = userProfileChangeRequest {
+                    displayName = name
+                }
+                user?.updateProfile(profileUpdates)
+                    ?.addOnCompleteListener { profileUpdateTask ->
+                        if (profileUpdateTask.isSuccessful) {
+                            navController.navigate("LoginPage")
+                        } else {
+//                            navController.navigate("TUSHubPage")
+                        }
+                    }
+            } else {
+                navController.navigate("SignUpPage")
+            }
+        }
 }

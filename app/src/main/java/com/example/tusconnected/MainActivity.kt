@@ -66,6 +66,12 @@ class MainActivity : ComponentActivity() {
                     composable("ContactUsPage") {
                         ContactUs(navController)
                     }
+                    composable("PicturesPage") {
+                        ContactUs(navController)
+                    }
+                    composable("GroupChatPage") {
+                        ContactUs(navController)
+                    }
                 }
             }
         }
@@ -73,7 +79,7 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-private fun navigateToTUSHubPage(navController: NavController) {
+fun navigateToTUSHubPage(navController: NavController) {
     navController.navigate("TUSHubPage")
 }
 
@@ -83,6 +89,10 @@ fun LoginPage(navController: NavController) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var errorMessage by remember { mutableStateOf("") }
+
+    if(errorMessage != null){
+        Text(text = errorMessage, color = Color.Red)
+    }
 
     Column(
         modifier = Modifier
@@ -121,20 +131,33 @@ fun LoginPage(navController: NavController) {
                 .padding(bottom = 8.dp)
         )
 
+        ClickableText(
+            text = AnnotatedString("Forgot your password?"),
+            onClick = {
+                navController.navigate("ForgotPasswordPage")
+            },
+            modifier = Modifier
+//                .padding(top = 8.dp)
+                .align(Alignment.End),
+            style = TextStyle(color = Color.Blue)
+        )
+
+//        Spacer(modifier = Modifier.height(8.dp))
+
         Text(
             text = errorMessage,
             color = Color.Red,
-            modifier = Modifier.padding(bottom = 8.dp)
+//            modifier = Modifier.padding(bottom = 8.dp)
         )
 
         Button(
             onClick = {
-//                if (isValidLogin(email, password)) {
-//                    navController.navigate("TUSHubPage")
-//                } else {
-//                    errorMessage = "Invalid email or password"
-//                }
-                      navController.navigate("TUSHubPage")
+                      if(isValidLogin(email, password)){
+                          loginWithEmailAndPassword(email, password, navController)
+                      } else {
+                          navController.navigate("LoginPage")
+                          errorMessage = "Invalid email and or password bro"
+                      }
             },
             modifier = Modifier
                 .fillMaxWidth()
@@ -142,33 +165,36 @@ fun LoginPage(navController: NavController) {
         ) {
             Text("LOGIN", color = Color.White)
         }
-
-        ClickableText(
-            text = AnnotatedString("Sign Up"),
-            onClick = {
-                navController.navigate("SignUpPage")
-            },
-            modifier = Modifier
-                .padding(top = 8.dp)
-                .align(Alignment.CenterHorizontally),
-            style = TextStyle(color = Color.Blue)
-        )
-
-        ClickableText(
-            text = AnnotatedString("Forgot your password?"),
-            onClick = {
-                navController.navigate("ForgotPasswordPage")
-            },
-            modifier = Modifier
-                .padding(top = 8.dp)
-                .align(Alignment.CenterHorizontally),
-            style = TextStyle(color = Color.Blue)
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
     }
 
-    Box(modifier = Modifier.fillMaxWidth()) {
+        Box(modifier = Modifier.fillMaxSize()) {
+            Row(
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .fillMaxWidth()
+                    .padding(vertical = 20.dp),
+                horizontalArrangement = Arrangement.Center
+            ) {
+                Text(
+                    text = AnnotatedString("Don't have an account yet?"),
+                    color = Color.Black,
+                    style = TextStyle(color = Color.Black),
+                    modifier = Modifier.padding(end = 4.dp)
+                )
+
+                ClickableText(
+                    text = AnnotatedString("Sign Up"),
+                    onClick = {
+                        navController.navigate("SignUpPage")
+                    },
+                    style = TextStyle(color = Color.Blue)
+                )
+            }
+        }
+
+
+        Box(modifier = Modifier.fillMaxWidth()) {
+
         TopAppBar(
             title = { Text("", color = Color.Black) },
             modifier = Modifier
@@ -199,14 +225,28 @@ fun LoginPage(navController: NavController) {
     }
 }
 
-//fun isValidLogin(email: String, password: String): Boolean {
-//    return isEmailValid(email) && isPasswordLoginValid(password)
-//}
-//
-//fun isEmailValid(email: String): Boolean {
-//    return email.isNotEmpty() && android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()
-//}
-//
-//fun isPasswordLoginValid(password: String): Boolean {
-//    return password.isNotEmpty() && password.length > 5
-//}
+fun isValidLogin(email: String, password: String): Boolean {
+    return isEmailValid(email) && isPasswordLoginValid(password)
+}
+
+fun isEmailValid(email: String): Boolean {
+    return email.isNotEmpty() && android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()
+}
+
+fun isPasswordLoginValid(password: String): Boolean {
+    return password.isNotEmpty() && password.length > 5
+}
+
+fun loginWithEmailAndPassword(email: String, password: String, navController: NavController) {
+    val firebase = FirebaseAuth.getInstance()
+    firebase.signInWithEmailAndPassword(email, password)
+        .addOnCompleteListener { task ->
+            if (task.isSuccessful) {
+                navController.navigate("TUSHubPage")
+            } else {
+//                val errorMessage = "invalid email and or password"
+                navController.navigate("LoginPage")
+//                errorMessage
+            }
+        }
+}

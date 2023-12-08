@@ -38,7 +38,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.tusconnected.ui.theme.TUSConnectedTheme
 
-class ContactUsPage : ComponentActivity() {
+class GroupChatPage : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -48,7 +48,7 @@ class ContactUsPage : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    ContactUs(navController)
+                    GroupChat(navController)
                 }
             }
         }
@@ -57,7 +57,7 @@ class ContactUsPage : ComponentActivity() {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ContactUs(navController: NavHostController) {
+fun GroupChat(navController: NavHostController) {
     Box(modifier = Modifier.fillMaxWidth()) {
         TopAppBar(
             title = { Text("", color = Color.Black) },
@@ -96,7 +96,7 @@ fun ContactUs(navController: NavHostController) {
                 .padding(100.dp)
         ) {
             Text(
-                text = "Contact US",
+                text = "GroupChat",
                 color = Color.Black,
                 style = MaterialTheme.typography.bodyLarge
             )
