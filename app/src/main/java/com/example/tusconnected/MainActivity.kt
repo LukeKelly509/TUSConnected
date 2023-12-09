@@ -209,7 +209,7 @@ fun LoginPage(navController: NavController) {
             contentDescription = "Logo",
             modifier = Modifier
                 .align(Alignment.CenterStart)
-                .offset(y = -75.dp, x = -150.dp)
+                .offset(y = -75.dp, x = -170.dp)
                 .scale(0.2f)
         )
 

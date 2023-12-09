@@ -60,7 +60,9 @@ class NewsFeedPage : ComponentActivity() {
 @Composable
 fun NewsFeed(navController: NavHostController) {
     val firebase = FirebaseAuth.getInstance()
-    Box(modifier = Modifier.fillMaxWidth()) {
+    Box(modifier = Modifier.fillMaxWidth()
+    ) {
+
         TopAppBar(
             title = { Text("", color = Color.Black) },
             modifier = Modifier
@@ -79,10 +81,18 @@ fun NewsFeed(navController: NavHostController) {
                 .align(Alignment.CenterStart)
                 .offset(y = -32.dp, x = -35.dp)
                 .scale(0.3f)
-                .clickable(){
+                .clickable() {
                     ifIsClicked = true
                     navController.navigate("TUSHubPage")
                 }
+        )
+
+        Text(text = "NEWS PAGE",
+            color = Color.Black,
+            style = MaterialTheme.typography.headlineMedium,
+            modifier = Modifier
+                .align(Alignment.TopCenter)
+                .padding(top = 20.dp)
         )
 
         val accountLogoImage = painterResource(id = R.drawable.accountlogo)
@@ -100,23 +110,65 @@ fun NewsFeed(navController: NavHostController) {
         modifier = Modifier.fillMaxSize()
 //            .padding(16.dp, 16.dp, 16.dp, 0.dp),
     ) {
+        val tusImage = painterResource(id = R.drawable.loginpageimage)
+        Image(
+            painter = tusImage,
+            contentDescription = "TUS College Image",
+            modifier = Modifier
+                .align(Alignment.TopCenter)
+//                .offset(y = -33.dp, x = 25.dp)
+//                .scale(0.3f)
+                .fillMaxSize()
+                .height(200.dp)
+                .padding(bottom = 435.dp)
+        )
+
         Column(
             modifier = Modifier
-                .fillMaxSize()
-                .padding(100.dp)
+//                .fillMaxSize()
+//                .padding(bottom = 10.dp)
+//                .offset(y = 250.dp)
+                .align(Alignment.CenterStart)
         ) {
             Text(
-                text = "NEWS FEED",
+                text = "TUS Timeable Update",
                 color = Color.Black,
-                style = MaterialTheme.typography.bodyLarge
+                style = MaterialTheme.typography.headlineMedium,
+                modifier = Modifier
+                    .padding(top = 130.dp)
+                    .background(color = Color.LightGray)
+                    .fillMaxWidth()
+//                    .padding(bottom = 80.dp)
+//                    .align(Alignment.Start)
             )
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Text(
+                text = "September 16th 2023, 11:11am",
+                color = Color.Black,
+                style = MaterialTheme.typography.bodySmall,
+                modifier = Modifier
+                    .background(color = Color.LightGray)
+                    .fillMaxWidth()
+//                    .padding(bottom = 80.dp)
+//                    .align(Alignment.Start)
+            )
+
+//            Spacer(modifier = Modifier.height(16.dp))
 
             Text(
-                text = "Hello students, we recently started working on a fix to the timetables that we feel will be beneficial to you all. We are now going to prioritize everyone else...",
+                text = "Hello students, we recently started working on a fix to the timetables" +
+                        " that we feel will be beneficial to you all.\n\n" + "We expect the fix to be done"
+                + "within the next few hours, if not we will send an email to you to let you know" +
+                "what's happening so you won't be out of the loop.\n\n - Mary McBeth",
                 color = Color.Black,
-                style = MaterialTheme.typography.bodyLarge
+                style = MaterialTheme.typography.bodyLarge,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(color = Color.LightGray)
+                    .padding(top = 10.dp)
+                    .padding(bottom = 20.dp)
+
+//                    .align(Alignment.Start)
             )
 
             Spacer(modifier = Modifier.height(16.dp))

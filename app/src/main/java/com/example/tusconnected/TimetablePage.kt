@@ -67,14 +67,20 @@ fun Timetable(navController: NavHostController) {
                 .fillMaxWidth()
                 .padding(100.dp)
         )
-        val logoImage = painterResource(id = R.drawable.tuslogo)
+        val backButton = painterResource(id = R.drawable.backbutton)
+        var ifIsClicked by remember { mutableStateOf(false)
+        }
         Image(
-            painter = logoImage,
-            contentDescription = "Logo",
+            painter = backButton,
+            contentDescription = "Back Button",
             modifier = Modifier
                 .align(Alignment.CenterStart)
-                .offset(y = -75.dp, x = -150.dp)
-                .scale(0.2f)
+                .offset(y = -32.dp, x = -35.dp)
+                .scale(0.3f)
+                .clickable(){
+                    ifIsClicked = true
+                    navController.navigate("TUSHubPage")
+                }
         )
 
         val accountLogoImage = painterResource(id = R.drawable.accountlogo)
@@ -83,10 +89,11 @@ fun Timetable(navController: NavHostController) {
             contentDescription = "Account Logo",
             modifier = Modifier
                 .align(Alignment.CenterEnd)
-                .offset(y = -75.dp, x = 25.dp)
+                .offset(y = -33.dp, x = 25.dp)
                 .scale(0.3f)
         )
     }
+
     Box(
         modifier = Modifier.fillMaxSize()
     ) {
