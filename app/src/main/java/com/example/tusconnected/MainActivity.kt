@@ -52,7 +52,7 @@ class MainActivity : ComponentActivity() {
                         NewsFeed(navController)
                     }
                     composable("CampusMapPage") {
-                        NewsFeed(navController)
+                        CampusMap(navController)
                     }
                     composable("TimetablePage") {
                         Timetable(navController)
@@ -60,17 +60,17 @@ class MainActivity : ComponentActivity() {
                     composable("SignUpPage") {
                         SignUp(navController)
                     }
-                    composable("ForgotPasswordPage") {
-                        ForgotPassword(navController)
-                    }
                     composable("ContactUsPage") {
                         ContactUs(navController)
                     }
-                    composable("PicturesPage") {
-                        ContactUs(navController)
+                    composable("addNewsPage") {
+                        addNews(navController)
                     }
-                    composable("GroupChatPage") {
-                        ContactUs(navController)
+                    composable("ViewContactedPage") {
+                        ViewContacted(navController)
+                    }
+                    composable("errorPage") {
+                        error(navController)
                     }
                 }
             }
@@ -130,19 +130,6 @@ fun LoginPage(navController: NavController) {
                 .fillMaxWidth()
                 .padding(bottom = 8.dp)
         )
-
-        ClickableText(
-            text = AnnotatedString("Forgot your password?"),
-            onClick = {
-                navController.navigate("ForgotPasswordPage")
-            },
-            modifier = Modifier
-//                .padding(top = 8.dp)
-                .align(Alignment.End),
-            style = TextStyle(color = Color.Blue)
-        )
-
-//        Spacer(modifier = Modifier.height(8.dp))
 
         Text(
             text = errorMessage,

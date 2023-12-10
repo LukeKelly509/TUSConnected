@@ -16,6 +16,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -38,6 +40,9 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.tusconnected.ui.theme.TUSConnectedTheme
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.Query
+import java.util.Date
 
 class NewsFeedPage : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -60,7 +65,15 @@ class NewsFeedPage : ComponentActivity() {
 @Composable
 fun NewsFeed(navController: NavHostController) {
     val firebase = FirebaseAuth.getInstance()
-    Box(modifier = Modifier.fillMaxWidth()
+    val firestore = FirebaseFirestore.getInstance()
+
+    data class itemsForNews(
+        val title: String,
+        val time: Date,
+        val description: String
+    )
+    Box(
+        modifier = Modifier.fillMaxWidth()
     ) {
 
         TopAppBar(
@@ -72,8 +85,10 @@ fun NewsFeed(navController: NavHostController) {
                 .padding(100.dp)
         )
         val backButton = painterResource(id = R.drawable.backbutton)
-        var ifIsClicked by remember { mutableStateOf(false)
+        var ifIsClicked by remember {
+            mutableStateOf(false)
         }
+
         Image(
             painter = backButton,
             contentDescription = "Back Button",
@@ -87,7 +102,8 @@ fun NewsFeed(navController: NavHostController) {
                 }
         )
 
-        Text(text = "NEWS PAGE",
+        Text(
+            text = "NEWS PAGE",
             color = Color.Black,
             style = MaterialTheme.typography.headlineMedium,
             modifier = Modifier
@@ -108,8 +124,25 @@ fun NewsFeed(navController: NavHostController) {
 
     Box(
         modifier = Modifier.fillMaxSize()
-//            .padding(16.dp, 16.dp, 16.dp, 0.dp),
     ) {
+        var itemsUsed by remember { mutableStateOf(emptyList<itemsForNews>()) }
+
+        firestore.collection("news")
+            .orderBy("timestamp", Query.Direction.ASCENDING)
+            .get()
+            .addOnSuccessListener { result ->
+                val items = result.documents.map { document ->
+                    val title = document.getString("title") ?: ""
+                    val timestamp = document.getTimestamp("timestamp")?.toDate() ?: Date()
+                    val description = document.getString("description") ?: ""
+                    itemsForNews(title, timestamp, description)
+                }
+                itemsUsed = items
+            }
+            .addOnFailureListener { exception ->
+            }
+
+
         val tusImage = painterResource(id = R.drawable.loginpageimage)
         Image(
             painter = tusImage,
@@ -123,56 +156,56 @@ fun NewsFeed(navController: NavHostController) {
                 .padding(bottom = 435.dp)
         )
 
-        Column(
+        LazyColumn(
             modifier = Modifier
-//                .fillMaxSize()
-//                .padding(bottom = 10.dp)
-//                .offset(y = 250.dp)
+                .fillMaxSize()
+                .padding(bottom = 10.dp)
                 .align(Alignment.CenterStart)
+                .offset(y = 310.dp)
         ) {
-            Text(
-                text = "TUS Timeable Update",
-                color = Color.Black,
-                style = MaterialTheme.typography.headlineMedium,
-                modifier = Modifier
-                    .padding(top = 130.dp)
-                    .background(color = Color.LightGray)
-                    .fillMaxWidth()
-//                    .padding(bottom = 80.dp)
-//                    .align(Alignment.Start)
-            )
+            if (itemsUsed.isNotEmpty()) {
+                items(itemsUsed) { item ->
+                    Text(
+                        text = item.title,
+                        color = Color.Red,
+                        style = MaterialTheme.typography.headlineMedium,
+                        modifier = Modifier
+                            .background(color = Color.LightGray)
+                            .fillMaxWidth()
+                            .padding(top = 8.dp, bottom = 8.dp)
+                    )
 
-            Text(
-                text = "September 16th 2023, 11:11am",
-                color = Color.Black,
-                style = MaterialTheme.typography.bodySmall,
-                modifier = Modifier
-                    .background(color = Color.LightGray)
-                    .fillMaxWidth()
-//                    .padding(bottom = 80.dp)
-//                    .align(Alignment.Start)
-            )
+                    Text(
+                        text = "${item.time}",
+                        color = Color.Black,
+                        style = MaterialTheme.typography.bodySmall,
+                        modifier = Modifier
+                            .background(color = Color.LightGray)
+                            .fillMaxWidth()
+                            .padding(bottom = 8.dp)
+                    )
 
-//            Spacer(modifier = Modifier.height(16.dp))
-
-            Text(
-                text = "Hello students, we recently started working on a fix to the timetables" +
-                        " that we feel will be beneficial to you all.\n\n" + "We expect the fix to be done"
-                + "within the next few hours, if not we will send an email to you to let you know" +
-                "what's happening so you won't be out of the loop.\n\n - Mary McBeth",
-                color = Color.Black,
-                style = MaterialTheme.typography.bodyLarge,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(color = Color.LightGray)
-                    .padding(top = 10.dp)
-                    .padding(bottom = 20.dp)
-
-//                    .align(Alignment.Start)
-            )
-
-            Spacer(modifier = Modifier.height(16.dp))
-
+                    Text(
+                        text = item.description,
+                        color = Color.Black,
+                        style = MaterialTheme.typography.bodyLarge,
+                        modifier = Modifier
+                            .background(color = Color.LightGray)
+                            .fillMaxWidth()
+                            .padding(bottom = 16.dp)
+                    )
+                }
+            } else {
+//                Text(
+//                    text = "No News, Lack of it infact, crazy",
+//                    color = Color.Black,
+//                    style = MaterialTheme.typography.headlineMedium,
+//                    modifier = Modifier
+//                        .background(color = Color.LightGray)
+//                        .fillMaxWidth()
+//                        .padding(top = 8.dp, bottom = 8.dp)
+//                )
+            }
         }
 
         BottomAppBar(
@@ -186,7 +219,8 @@ fun NewsFeed(navController: NavHostController) {
         )
 
         val contactUsImage = painterResource(id = R.drawable.contactus)
-        val groupchatImage = painterResource(id = R.drawable.groupchat)
+        val picturesImage = painterResource(id = R.drawable.pictures)
+        val addNewsImage = painterResource(id = R.drawable.database)
         var ifIsClicked by remember { mutableStateOf(false)
         }
 
@@ -203,6 +237,20 @@ fun NewsFeed(navController: NavHostController) {
                     navController.navigate("ContactUsPage")
                 }
         )
+
+//        Image(
+//            painter = picturesImage,
+//            contentDescription = "Pictures",
+//            modifier = Modifier
+//                .align(Alignment.Center)
+//                .offset(y = 370.dp, x = 130.dp)
+//                .height(45.dp)
+//                .width(45.dp)
+//                .clickable {
+//                    ifIsClicked = true
+//                    navController.navigate("PicturesPage")
+//                }
+//        )
 
         val logoutImage = painterResource(id = R.drawable.logout)
         var ifClicked by remember { mutableStateOf(false) }
@@ -222,8 +270,8 @@ fun NewsFeed(navController: NavHostController) {
         )
 
         Image(
-            painter = groupchatImage,
-            contentDescription = "Group Chats",
+            painter = addNewsImage,
+            contentDescription = "Adding News",
             modifier = Modifier
                 .align(Alignment.Center)
                 .offset(y = 370.dp, x = -130.dp)
@@ -231,10 +279,10 @@ fun NewsFeed(navController: NavHostController) {
                 .width(60.dp)
                 .clickable {
                     ifIsClicked = true
-                    navController.navigate("GroupChatPage")
+                    navController.navigate("addNewsPage")
                 }
         )
     }
-}
+    }
 
 

@@ -37,6 +37,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.tusconnected.ui.theme.TUSConnectedTheme
+import com.google.firebase.auth.FirebaseAuth
 
 class CampusMapPage : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -58,6 +59,7 @@ class CampusMapPage : ComponentActivity() {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CampusMap(navController: NavHostController) {
+    val firebase = FirebaseAuth.getInstance()
     Box(modifier = Modifier.fillMaxWidth()) {
         TopAppBar(
             title = { Text("", color = Color.Black) },
@@ -68,8 +70,10 @@ fun CampusMap(navController: NavHostController) {
                 .padding(100.dp)
         )
         val backButton = painterResource(id = R.drawable.backbutton)
-        var ifIsClicked by remember { mutableStateOf(false)
+        var ifIsClicked by remember {
+            mutableStateOf(false)
         }
+
         Image(
             painter = backButton,
             contentDescription = "Back Button",
@@ -77,10 +81,19 @@ fun CampusMap(navController: NavHostController) {
                 .align(Alignment.CenterStart)
                 .offset(y = -32.dp, x = -35.dp)
                 .scale(0.3f)
-                .clickable(){
+                .clickable() {
                     ifIsClicked = true
                     navController.navigate("TUSHubPage")
                 }
+        )
+
+        Text(
+            text = "CAMPUS MAP",
+            color = Color.Black,
+            style = MaterialTheme.typography.headlineMedium,
+            modifier = Modifier
+                .align(Alignment.TopCenter)
+                .padding(top = 20.dp)
         )
 
         val accountLogoImage = painterResource(id = R.drawable.accountlogo)
@@ -97,16 +110,26 @@ fun CampusMap(navController: NavHostController) {
     Box(
         modifier = Modifier.fillMaxSize()
     ) {
+
+        val campusMapImage = painterResource(id = R.drawable.tuscloseup)
+        Image(
+            painter = campusMapImage,
+            contentDescription = "Campus Map Image",
+            modifier = Modifier
+                .align(Alignment.TopCenter)
+//                .offset(y = -33.dp, x = 25.dp)
+//                .scale(0.3f)
+                .fillMaxSize()
+                .height(200.dp)
+                .padding(bottom = 435.dp)
+        )
+
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(100.dp)
         ) {
-            Text(
-                text = "Campus Map",
-                color = Color.Black,
-                style = MaterialTheme.typography.bodyLarge
-            )
+
         }
 
         BottomAppBar(
@@ -121,8 +144,9 @@ fun CampusMap(navController: NavHostController) {
 
         val contactUsImage = painterResource(id = R.drawable.contactus)
         val picturesImage = painterResource(id = R.drawable.pictures)
-        val groupchatImage = painterResource(id = R.drawable.groupchat)
-        var ifIsClicked by remember { mutableStateOf(false) }
+        val addNewsImage = painterResource(id = R.drawable.database)
+        var ifIsClicked by remember { mutableStateOf(false)
+        }
 
         Image(
             painter = contactUsImage,
@@ -138,23 +162,40 @@ fun CampusMap(navController: NavHostController) {
                 }
         )
 
+//        Image(
+//            painter = picturesImage,
+//            contentDescription = "Pictures",
+//            modifier = Modifier
+//                .align(Alignment.Center)
+//                .offset(y = 370.dp, x = 130.dp)
+//                .height(45.dp)
+//                .width(45.dp)
+//                .clickable {
+//                    ifIsClicked = true
+//                    navController.navigate("PicturesPage")
+//                }
+//        )
+
+        val logoutImage = painterResource(id = R.drawable.logout)
+        var ifClicked by remember { mutableStateOf(false) }
         Image(
-            painter = picturesImage,
-            contentDescription = "Pictures",
+            painter = logoutImage,
+            contentDescription = "Logout Image",
             modifier = Modifier
-                .align(Alignment.Center)
-                .offset(y = 370.dp, x = 130.dp)
-                .height(45.dp)
-                .width(45.dp)
-                .clickable {
-                    ifIsClicked = true
-                    navController.navigate("PicturesPage")
+                .align(Alignment.CenterEnd)
+                .offset(y = 375.dp, x = -50.dp)
+                .height(60.dp)
+                .width(60.dp)
+                .clickable() {
+                    ifClicked = true
+                    firebase.signOut()
+                    navController.navigate("LoginPage")
                 }
         )
 
         Image(
-            painter = groupchatImage,
-            contentDescription = "Group Chats",
+            painter = addNewsImage,
+            contentDescription = "Adding News",
             modifier = Modifier
                 .align(Alignment.Center)
                 .offset(y = 370.dp, x = -130.dp)
@@ -162,7 +203,7 @@ fun CampusMap(navController: NavHostController) {
                 .width(60.dp)
                 .clickable {
                     ifIsClicked = true
-                    navController.navigate("GroupChatPage")
+                    navController.navigate("addNewsPage")
                 }
         )
     }

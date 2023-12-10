@@ -8,19 +8,18 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.BottomAppBar
+import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -34,17 +33,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.tusconnected.ui.theme.TUSConnectedTheme
+import com.google.firebase.Firebase
+import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.Query
 import java.util.Date
 
-class AboutUSPage : ComponentActivity() {
+class addNewsPage : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -54,7 +53,7 @@ class AboutUSPage : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    AboutUs(navController)
+                    addNews(navController)
                 }
             }
         }
@@ -63,18 +62,14 @@ class AboutUSPage : ComponentActivity() {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AboutUs(navController: NavHostController) {
+fun addNews(navController: NavHostController) {
     val firebase = FirebaseAuth.getInstance()
-    val firestore = FirebaseFirestore.getInstance()
+    var title by remember { mutableStateOf("") }
+    var timestamp by remember { mutableStateOf("") }
+    var description by remember { mutableStateOf("") }
+    var errorMessage by remember { mutableStateOf("") }
 
-    data class itemsForAbout(
-        val title: String,
-        val description: String
-    )
-    Box(
-        modifier = Modifier.fillMaxWidth()
-    ) {
-
+    Box(modifier = Modifier.fillMaxWidth()) {
         TopAppBar(
             title = { Text("", color = Color.Black) },
             modifier = Modifier
@@ -87,7 +82,6 @@ fun AboutUs(navController: NavHostController) {
         var ifIsClicked by remember {
             mutableStateOf(false)
         }
-
         Image(
             painter = backButton,
             contentDescription = "Back Button",
@@ -102,7 +96,7 @@ fun AboutUs(navController: NavHostController) {
         )
 
         Text(
-            text = "ABOUT US",
+            text = "ADD NEWS",
             color = Color.Black,
             style = MaterialTheme.typography.headlineMedium,
             modifier = Modifier
@@ -120,32 +114,14 @@ fun AboutUs(navController: NavHostController) {
                 .scale(0.3f)
         )
     }
-
-
     Box(
         modifier = Modifier.fillMaxSize()
     ) {
-        var itemsUsed by remember { mutableStateOf(emptyList<itemsForAbout>()) }
 
-        firestore.collection("about")
-            .orderBy("title", Query.Direction.ASCENDING)
-            .get()
-            .addOnSuccessListener { result ->
-                val items = result.documents.map { document ->
-                    val title = document.getString("title") ?: ""
-                    val description = document.getString("description") ?: ""
-                    itemsForAbout(title, description)
-                }
-                itemsUsed = items
-            }
-            .addOnFailureListener { exception ->
-            }
-
-
-        val tusImage = painterResource(id = R.drawable.imagetus)
+        val addingNewsImage = painterResource(id = R.drawable.adding)
         Image(
-            painter = tusImage,
-            contentDescription = "TUS College Image",
+            painter = addingNewsImage,
+            contentDescription = "Adding News Image",
             modifier = Modifier
                 .align(Alignment.TopCenter)
 //                .offset(y = -33.dp, x = 25.dp)
@@ -155,46 +131,62 @@ fun AboutUs(navController: NavHostController) {
                 .padding(bottom = 435.dp)
         )
 
-        LazyColumn(
+        Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(bottom = 10.dp)
-                .align(Alignment.CenterStart)
-                .offset(y = 310.dp)
+                .padding(100.dp)
         ) {
-            if (itemsUsed.isNotEmpty()) {
-                items(itemsUsed) { item ->
-                    Text(
-                        text = item.title,
-                        color = Color.Red,
-                        style = MaterialTheme.typography.headlineMedium,
-                        modifier = Modifier
-                            .background(color = Color.LightGray)
-                            .fillMaxWidth()
-                            .padding(top = 8.dp, bottom = 8.dp)
-                    )
+            Spacer(modifier = Modifier.height(250.dp))
 
-                    Text(
-                        text = item.description,
-                        color = Color.Black,
-                        style = MaterialTheme.typography.bodyLarge,
-                        modifier = Modifier
-                            .background(color = Color.LightGray)
-                            .fillMaxWidth()
-                            .padding(bottom = 16.dp)
-                    )
-                }
-            } else {
-//                Text(
-//                    text = "No News, Lack of it infact, crazy",
-//                    color = Color.Black,
-//                    style = MaterialTheme.typography.headlineMedium,
-//                    modifier = Modifier
-//                        .background(color = Color.LightGray)
-//                        .fillMaxWidth()
-//                        .padding(top = 8.dp, bottom = 8.dp)
-//                )
+            OutlinedTextField(
+                value = title,
+                onValueChange = { title = it },
+                label = { Text("Title") },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 8.dp)
+            )
+
+//            OutlinedTextField(
+//                value = timestamp,
+//                onValueChange = { timestamp = it },
+//                label = { Text("Timestamp") },
+//                modifier = Modifier
+//                    .fillMaxWidth()
+//                    .padding(bottom = 8.dp)
+//            )
+
+            OutlinedTextField(
+                value = description,
+                onValueChange = { description = it },
+                label = { Text("Description") },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 16.dp)
+            )
+
+            Text(
+                text = errorMessage,
+                color = Color.Red,
+                modifier = Modifier.padding(bottom = 5.dp)
+            )
+
+            Button(
+                onClick = {
+                    if (isValidAdd(title, description)) {
+                        addNews(title, description)
+                        navController.navigate("TUSHubPage")
+                    } else {
+                        errorMessage = "Title Length > 3, Description is not null!"
+                    }
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(50.dp)
+            ) {
+                Text("Add News", color = Color.White)
             }
+            Spacer(modifier = Modifier.padding(bottom = 30.dp))
         }
 
             BottomAppBar(
@@ -210,7 +202,8 @@ fun AboutUs(navController: NavHostController) {
             val contactUsImage = painterResource(id = R.drawable.contactus)
             val picturesImage = painterResource(id = R.drawable.pictures)
             val addNewsImage = painterResource(id = R.drawable.database)
-            var ifIsClicked by remember { mutableStateOf(false)
+            var ifIsClicked by remember {
+                mutableStateOf(false)
             }
 
             Image(
@@ -272,7 +265,47 @@ fun AboutUs(navController: NavHostController) {
                     }
             )
         }
+    }
+
+fun addNews(title: String, description: String) {
+    val firestore = FirebaseFirestore.getInstance()
+
+    val newsData = hashMapOf(
+        "title" to title,
+        "timestamp" to Timestamp.now(),
+        "description" to description
+    )
+
+    firestore.collection("news")
+        .add(newsData)
+        .addOnSuccessListener { documentReference ->
+            println("News added with ID: ${documentReference.id}")
+        }
+        .addOnFailureListener { error ->
+            println("Error")
+        }
 }
 
+fun isValidAdd(title: String, description: String): Boolean {
+    return isValidTitle(title) && isValidDescription(description)
+}
+
+data class newsItems(
+    val title: String,
+    val description: String,
+    val timestamp: String
+)
+
+fun isValidTitle(title: String): Boolean {
+    return title.isNotEmpty() && title.length > 3
+}
+
+fun isValidTimestamp(timestamp: String): Boolean {
+    return timestamp != null
+}
+
+fun isValidDescription(description: String): Boolean {
+    return description.isNotEmpty()
+}
 
 

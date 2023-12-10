@@ -7,15 +7,14 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
@@ -32,15 +31,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavHostController
+import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.tusconnected.ui.theme.TUSConnectedTheme
-import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.Query
 
-class TimetablePage : ComponentActivity() {
+class ViewContactedPage : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -50,7 +49,7 @@ class TimetablePage : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    Timetable(navController)
+                    ViewContacted(navController)
                 }
             }
         }
@@ -59,8 +58,16 @@ class TimetablePage : ComponentActivity() {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Timetable(navController: NavHostController) {
+fun ViewContacted(navController: NavController) {
     val firebase = FirebaseAuth.getInstance()
+    val firestore = FirebaseFirestore.getInstance()
+
+    data class itemsForContacts(
+        val name: String,
+        val email: String,
+        val message: String
+    )
+
     Box(modifier = Modifier.fillMaxWidth()) {
         TopAppBar(
             title = { Text("", color = Color.Black) },
@@ -74,7 +81,6 @@ fun Timetable(navController: NavHostController) {
         var ifIsClicked by remember {
             mutableStateOf(false)
         }
-
         Image(
             painter = backButton,
             contentDescription = "Back Button",
@@ -84,12 +90,12 @@ fun Timetable(navController: NavHostController) {
                 .scale(0.3f)
                 .clickable() {
                     ifIsClicked = true
-                    navController.navigate("TUSHubPage")
+                    navController.navigate("ContactUsPage")
                 }
         )
 
         Text(
-            text = "TIMETABLE",
+            text = "Messages",
             color = Color.Black,
             style = MaterialTheme.typography.headlineMedium,
             modifier = Modifier
@@ -111,16 +117,87 @@ fun Timetable(navController: NavHostController) {
     Box(
         modifier = Modifier.fillMaxSize()
     ) {
-        Column(
+        var contacts by remember { mutableStateOf(emptyList<itemsForContacts>()) }
+
+        firestore.collection("contact")
+            .orderBy("name", Query.Direction.ASCENDING)
+            .get()
+            .addOnSuccessListener { result ->
+                val contacted = result.documents.map { document ->
+                    val name = document.getString("name") ?: ""
+                    val email = document.getString("email") ?: ""
+                    val message = document.getString("message") ?: ""
+                    itemsForContacts(name, email, message)
+                }
+                contacts = contacted
+            }
+            .addOnFailureListener { exception ->
+            }
+
+
+        val contactingImage = painterResource(id = R.drawable.contacting)
+        Image(
+            painter = contactingImage,
+            contentDescription = "Viewing Contacted Messages",
+            modifier = Modifier
+                .align(Alignment.TopCenter)
+//                .offset(y = -33.dp, x = 25.dp)
+//                .scale(0.3f)
+                .fillMaxSize()
+                .height(200.dp)
+                .padding(bottom = 435.dp)
+        )
+
+        LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(100.dp)
+                .padding(bottom = 10.dp)
+                .align(Alignment.CenterStart)
+                .offset(y = 310.dp)
         ) {
-            Text(
-                text = "TIMETABLE",
-                color = Color.Black,
-                style = MaterialTheme.typography.bodyLarge
-            )
+            if (contacts.isNotEmpty()) {
+                items(contacts) { item ->
+                    Text(
+                        text = item.email,
+                        color = Color.Red,
+                        style = MaterialTheme.typography.headlineMedium,
+                        modifier = Modifier
+                            .background(color = Color.LightGray)
+                            .fillMaxWidth()
+                            .padding(bottom = 8.dp)
+                    )
+
+                    Text(
+                        text = item.name,
+                        color = Color.Black,
+                        style = MaterialTheme.typography.bodyLarge,
+                        modifier = Modifier
+                            .background(color = Color.LightGray)
+                            .fillMaxWidth()
+                            .padding(top = 8.dp, bottom = 8.dp)
+                    )
+
+                    Text(
+                        text = item.message,
+                        color = Color.Black,
+                        style = MaterialTheme.typography.bodyLarge,
+                        modifier = Modifier
+                            .background(color = Color.LightGray)
+                            .fillMaxWidth()
+                            .padding(bottom = 16.dp)
+                    )
+                }
+            } else {
+//                Text(
+//                    text = "No News, Lack of it infact, crazy",
+//                    color = Color.Black,
+//                    style = MaterialTheme.typography.headlineMedium,
+//                    modifier = Modifier
+//                        .background(color = Color.LightGray)
+//                        .fillMaxWidth()
+//                        .padding(top = 8.dp, bottom = 8.dp)
+//                )
+            }
         }
 
         BottomAppBar(
@@ -198,6 +275,4 @@ fun Timetable(navController: NavHostController) {
                 }
         )
     }
-    }
-
-
+}

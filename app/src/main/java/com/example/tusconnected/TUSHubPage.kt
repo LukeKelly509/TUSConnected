@@ -65,6 +65,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.tusconnected.ui.theme.TUSConnectedTheme
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
 
 class TUSHubPage : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -119,46 +120,8 @@ fun TUSHub(navController: NavController) {
                 .offset(y = -75.dp, x = 25.dp)
                 .scale(0.3f)
         )
-
-//        val logoutImage = painterResource(id = R.drawable.logout)
-//        var ifClicked by remember { mutableStateOf(false) }
-//        Image(
-//            painter = logoutImage,
-//            contentDescription = "Logout Image",
-//            modifier = Modifier
-//                .align(Alignment.CenterEnd)
-//                .offset(y = -70.dp, x = -30.dp)
-////                .size(50.dp)
-//                .scale(0.4f)
-//                .clickable() {
-//                    ifClicked = true
-//                    firebase.signOut()
-//                    navController.navigate("LoginPage")
-//                }
-//        )
-
-//        if (notifications) {
-//            Snackbar(
-//                action = {
-//                    TextButton(onClick = { notifications = false }) {
-//                        Text("Dismiss")
-//                    }
-//                },
-//                modifier = Modifier
-//                    .align(Alignment.TopCenter)
-//                    .padding(100.dp)
-//            ) {
-//                Text("You have new notifications!")
-//            }
-//        }
     }
 
-
-//    Box(
-//        modifier = Modifier
-//            .fillMaxSize()
-//            .padding(100.dp),
-//    ) {
     Box(
         modifier = Modifier.fillMaxSize()
     ) {
@@ -286,9 +249,8 @@ fun TUSHub(navController: NavController) {
         )
 
         val contactUsImage = painterResource(id = R.drawable.contactus)
-        val picturesImage = painterResource(id = R.drawable.pictures)
-        val groupchatImage = painterResource(id = R.drawable.groupchat)
         var ifIsClicked by remember { mutableStateOf(false)
+
         }
 
         Image(
@@ -336,20 +298,27 @@ fun TUSHub(navController: NavController) {
                 }
         )
 
+        val addNewsImage = painterResource(id = R.drawable.database)
         Image(
-            painter = groupchatImage,
-            contentDescription = "Group Chats",
+            painter = addNewsImage,
+            contentDescription = "Adding News",
             modifier = Modifier
                 .align(Alignment.Center)
                 .offset(y = 370.dp, x = -130.dp)
                 .height(60.dp)
                 .width(60.dp)
                 .clickable {
-                    ifIsClicked = true
-                    navController.navigate("GroupChatPage")
+                    val emailAllowed = "k00273673@student.tus.ie"
+                    val currentUser = FirebaseAuth.getInstance().currentUser?.email
+                    println("Email Allowed: $emailAllowed, Current User: $currentUser")
+                    if(emailAllowed == currentUser){
+                        ifIsClicked = true
+                        navController.navigate("addNewsPage")
+                    } else {
+                        navController.navigate("errorPage")
+                    }
                 }
         )
-
     }
 }
     fun getImageResourceForText(text: String): Int {
