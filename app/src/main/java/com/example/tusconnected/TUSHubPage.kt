@@ -128,6 +128,7 @@ fun TUSHub(navController: NavController) {
                 "ABOUT US" to "AboutUSPage"
             )
 
+            //https://www.youtube.com/watch?v=pvNcJXprrKM used for figuring this out
             LazyColumn(
                 contentPadding = PaddingValues(16.dp),
                 modifier = Modifier.weight(1f),

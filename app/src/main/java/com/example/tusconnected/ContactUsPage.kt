@@ -238,6 +238,7 @@ fun ContactUs(navController: NavHostController) {
                 .size(70.dp)
                 .padding(start = 0.dp, bottom = 10.dp)
                 .clickable {
+//https://www.youtube.com/watch?v=7nNdBsRSKZE used for getting the phone number
                     val phone = Intent(Intent.ACTION_DIAL).apply {
                         data = Uri.parse("tel:0873456726")
                     }
