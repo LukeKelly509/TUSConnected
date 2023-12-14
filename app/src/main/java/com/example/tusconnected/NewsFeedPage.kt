@@ -1,25 +1,22 @@
 package com.example.tusconnected
 
-import androidx.compose.foundation.Image
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.BottomAppBar
-import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -32,7 +29,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
@@ -67,15 +63,14 @@ fun NewsFeed(navController: NavHostController) {
     val firebase = FirebaseAuth.getInstance()
     val firestore = FirebaseFirestore.getInstance()
 
+    //needed for collection called "news"
     data class itemsForNews(
         val title: String,
         val time: Date,
         val description: String
     )
-    Box(
-        modifier = Modifier.fillMaxWidth()
-    ) {
 
+    Box(modifier = Modifier.fillMaxSize()) {
         TopAppBar(
             title = { Text("", color = Color.Black) },
             modifier = Modifier
@@ -93,9 +88,9 @@ fun NewsFeed(navController: NavHostController) {
             painter = backButton,
             contentDescription = "Back Button",
             modifier = Modifier
-                .align(Alignment.CenterStart)
-                .offset(y = -32.dp, x = -35.dp)
-                .scale(0.3f)
+                .align(Alignment.TopStart)
+                .padding(start = 16.dp, top = 16.dp)
+                .size(50.dp)
                 .clickable() {
                     ifIsClicked = true
                     navController.navigate("TUSHubPage")
@@ -103,7 +98,7 @@ fun NewsFeed(navController: NavHostController) {
         )
 
         Text(
-            text = "NEWS PAGE",
+            text = "NEWS FEED",
             color = Color.Black,
             style = MaterialTheme.typography.headlineMedium,
             modifier = Modifier
@@ -116,9 +111,9 @@ fun NewsFeed(navController: NavHostController) {
             painter = accountLogoImage,
             contentDescription = "Account Logo",
             modifier = Modifier
-                .align(Alignment.CenterEnd)
-                .offset(y = -33.dp, x = 25.dp)
-                .scale(0.3f)
+                .align(Alignment.TopEnd)
+                .padding(end = 16.dp, top = 16.dp)
+                .size(50.dp)
         )
     }
 
@@ -127,6 +122,7 @@ fun NewsFeed(navController: NavHostController) {
     ) {
         var itemsUsed by remember { mutableStateOf(emptyList<itemsForNews>()) }
 
+        //same as About Us, just tweaked to work for News
         firestore.collection("news")
             .orderBy("timestamp", Query.Direction.ASCENDING)
             .get()
@@ -140,8 +136,8 @@ fun NewsFeed(navController: NavHostController) {
                 itemsUsed = items
             }
             .addOnFailureListener { exception ->
-            }
 
+            }
 
         val tusImage = painterResource(id = R.drawable.loginpageimage)
         Image(
@@ -149,11 +145,8 @@ fun NewsFeed(navController: NavHostController) {
             contentDescription = "TUS College Image",
             modifier = Modifier
                 .align(Alignment.TopCenter)
-//                .offset(y = -33.dp, x = 25.dp)
-//                .scale(0.3f)
-                .fillMaxSize()
-                .height(200.dp)
-                .padding(bottom = 435.dp)
+                .padding(top = 80.dp)
+                .aspectRatio(16f / 9f)
         )
 
         LazyColumn(
@@ -196,15 +189,7 @@ fun NewsFeed(navController: NavHostController) {
                     )
                 }
             } else {
-//                Text(
-//                    text = "No News, Lack of it infact, crazy",
-//                    color = Color.Black,
-//                    style = MaterialTheme.typography.headlineMedium,
-//                    modifier = Modifier
-//                        .background(color = Color.LightGray)
-//                        .fillMaxWidth()
-//                        .padding(top = 8.dp, bottom = 8.dp)
-//                )
+
             }
         }
 
@@ -219,38 +204,20 @@ fun NewsFeed(navController: NavHostController) {
         )
 
         val contactUsImage = painterResource(id = R.drawable.contactus)
-        val picturesImage = painterResource(id = R.drawable.pictures)
-        val addNewsImage = painterResource(id = R.drawable.database)
-        var ifIsClicked by remember { mutableStateOf(false)
-        }
+        var ifIsClicked by remember { mutableStateOf(false) }
 
         Image(
             painter = contactUsImage,
             contentDescription = "Contact Us",
             modifier = Modifier
-                .align(Alignment.Center)
-                .offset(y = 370.dp, x = 0.dp)
-                .height(50.dp)
-                .width(50.dp)
+                .align(Alignment.BottomCenter)
+                .size(70.dp)
+                .padding(start = 0.dp, bottom = 10.dp)
                 .clickable {
                     ifIsClicked = true
                     navController.navigate("ContactUsPage")
                 }
         )
-
-//        Image(
-//            painter = picturesImage,
-//            contentDescription = "Pictures",
-//            modifier = Modifier
-//                .align(Alignment.Center)
-//                .offset(y = 370.dp, x = 130.dp)
-//                .height(45.dp)
-//                .width(45.dp)
-//                .clickable {
-//                    ifIsClicked = true
-//                    navController.navigate("PicturesPage")
-//                }
-//        )
 
         val logoutImage = painterResource(id = R.drawable.logout)
         var ifClicked by remember { mutableStateOf(false) }
@@ -258,10 +225,9 @@ fun NewsFeed(navController: NavHostController) {
             painter = logoutImage,
             contentDescription = "Logout Image",
             modifier = Modifier
-                .align(Alignment.CenterEnd)
-                .offset(y = 375.dp, x = -50.dp)
-                .height(60.dp)
-                .width(60.dp)
+                .align(Alignment.BottomEnd)
+                .size(100.dp)
+                .padding(end = 40.dp, top = 25.dp)
                 .clickable() {
                     ifClicked = true
                     firebase.signOut()
@@ -269,20 +235,28 @@ fun NewsFeed(navController: NavHostController) {
                 }
         )
 
+        val addNewsImage = painterResource(id = R.drawable.database)
         Image(
             painter = addNewsImage,
             contentDescription = "Adding News",
             modifier = Modifier
-                .align(Alignment.Center)
-                .offset(y = 370.dp, x = -130.dp)
-                .height(60.dp)
-                .width(60.dp)
+                .align(Alignment.BottomStart)
+                .padding(start = 30.dp, bottom = 10.dp)
+                .size(60.dp)
                 .clickable {
-                    ifIsClicked = true
-                    navController.navigate("addNewsPage")
+                    val emailAllowed = "k00273673@student.tus.ie"
+                    val currentUser = FirebaseAuth.getInstance().currentUser?.email
+                    println("Email Allowed: $emailAllowed, Current User: $currentUser")
+                    if (emailAllowed == currentUser) {
+                        ifIsClicked = true
+                        navController.navigate("addNewsPage")
+                    } else {
+                        navController.navigate("errorPage")
+                    }
                 }
         )
     }
-    }
+}
+
 
 

@@ -53,6 +53,11 @@ android {
 dependencies {
 
     implementation(platform("com.google.firebase:firebase-bom:32.6.0"))
+    implementation ("androidx.compose.ui:ui:1.0.4")
+    implementation ("androidx.compose.material3:material3:1.0.0-beta01") 
+    implementation ("androidx.constraintlayout:constraintlayout-compose:1.0.0-alpha07")
+    implementation ("com.google.maps.android:maps-ktx:3.2.0")
+    implementation ("com.google.maps.android:maps-utils-ktx:5.0.0")
     implementation ("com.google.android.gms:play-services-maps:17.0.1")
     implementation ("com.google.android.gms:play-services-location:18.0.0")
     implementation("com.google.android.material:material:1.4.0")
@@ -71,6 +76,7 @@ dependencies {
     implementation("com.google.firebase:firebase-database:20.3.0")
     implementation("com.google.firebase:firebase-auth:22.3.0")
     implementation("com.google.firebase:firebase-firestore-ktx:24.10.0")
+    implementation("com.google.firebase:firebase-messaging:23.4.0")
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")

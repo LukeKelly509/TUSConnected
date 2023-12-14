@@ -1,9 +1,9 @@
 package com.example.tusconnected
 
-import androidx.compose.foundation.Image
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -11,11 +11,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
@@ -29,14 +26,18 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.viewinterop.AndroidView
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.tusconnected.ui.theme.TUSConnectedTheme
+import com.google.android.gms.maps.CameraUpdateFactory
+import com.google.android.gms.maps.GoogleMap
+import com.google.android.gms.maps.MapView
+import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.MarkerOptions
 import com.google.firebase.auth.FirebaseAuth
 
 class CampusMapPage : ComponentActivity() {
@@ -45,6 +46,7 @@ class CampusMapPage : ComponentActivity() {
         setContent {
             TUSConnectedTheme {
                 val navController = rememberNavController()
+
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
@@ -54,13 +56,44 @@ class CampusMapPage : ComponentActivity() {
             }
         }
     }
+
+
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CampusMap(navController: NavHostController) {
     val firebase = FirebaseAuth.getInstance()
-    Box(modifier = Modifier.fillMaxWidth()) {
+    var map by remember { mutableStateOf<GoogleMap?>(null) }
+
+//https://developer.android.com/jetpack/compose/migrate/interoperability-apis/views-in-compose <- for AndroidView and creating the lambda
+    AndroidView(
+        factory = { context ->
+            val mapView = MapView(context)
+            mapView.onCreate(Bundle())
+            mapView.getMapAsync { googleMap ->
+                //https://www.youtube.com/watch?v=pOKPQ8rYe6g <- for the googleMap location bit, moveCamera.. used normal map myself
+                val location = LatLng(52.6753966,-8.6492355) //that's the astroturf one (why?? just to show the college in the center(college is 52.6755332,-8.6501045))
+                map = googleMap
+                googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(location, 17f))
+                googleMap.mapType = GoogleMap.MAP_TYPE_NORMAL
+
+                //Marker part of mapsdemoik on Moodle
+                googleMap.addMarker(
+                    MarkerOptions()
+                        .position(location)
+                        .title("TUS College")
+                        .snippet("TUS College")
+                )
+            }
+            mapView
+        },
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = 80.dp)
+    )
+
+    Box(modifier = Modifier.fillMaxSize()) {
         TopAppBar(
             title = { Text("", color = Color.Black) },
             modifier = Modifier
@@ -78,9 +111,9 @@ fun CampusMap(navController: NavHostController) {
             painter = backButton,
             contentDescription = "Back Button",
             modifier = Modifier
-                .align(Alignment.CenterStart)
-                .offset(y = -32.dp, x = -35.dp)
-                .scale(0.3f)
+                .align(Alignment.TopStart)
+                .padding(start = 16.dp, top = 16.dp)
+                .size(50.dp)
                 .clickable() {
                     ifIsClicked = true
                     navController.navigate("TUSHubPage")
@@ -101,28 +134,29 @@ fun CampusMap(navController: NavHostController) {
             painter = accountLogoImage,
             contentDescription = "Account Logo",
             modifier = Modifier
-                .align(Alignment.CenterEnd)
-                .offset(y = -33.dp, x = 25.dp)
-                .scale(0.3f)
+                .align(Alignment.TopEnd)
+                .padding(end = 16.dp, top = 16.dp)
+                .size(50.dp)
         )
     }
+
 
     Box(
         modifier = Modifier.fillMaxSize()
     ) {
 
-        val campusMapImage = painterResource(id = R.drawable.tuscloseup)
-        Image(
-            painter = campusMapImage,
-            contentDescription = "Campus Map Image",
-            modifier = Modifier
-                .align(Alignment.TopCenter)
-//                .offset(y = -33.dp, x = 25.dp)
-//                .scale(0.3f)
-                .fillMaxSize()
-                .height(200.dp)
-                .padding(bottom = 435.dp)
-        )
+//        val campusMapImage = painterResource(id = R.drawable.tuscloseup)
+//        Image(
+//            painter = campusMapImage,
+//            contentDescription = "Campus Map Image",
+//            modifier = Modifier
+//                .align(Alignment.TopCenter)
+////                .offset(y = -33.dp, x = 25.dp)
+////                .scale(0.3f)
+//                .fillMaxSize()
+//                .height(200.dp)
+//                .padding(bottom = 435.dp)
+//        )
 
         Column(
             modifier = Modifier
@@ -143,38 +177,20 @@ fun CampusMap(navController: NavHostController) {
         )
 
         val contactUsImage = painterResource(id = R.drawable.contactus)
-        val picturesImage = painterResource(id = R.drawable.pictures)
-        val addNewsImage = painterResource(id = R.drawable.database)
-        var ifIsClicked by remember { mutableStateOf(false)
-        }
+        var ifIsClicked by remember { mutableStateOf(false) }
 
         Image(
             painter = contactUsImage,
             contentDescription = "Contact Us",
             modifier = Modifier
-                .align(Alignment.Center)
-                .offset(y = 370.dp, x = 0.dp)
-                .height(50.dp)
-                .width(50.dp)
+                .align(Alignment.BottomCenter)
+                .size(70.dp)
+                .padding(start = 0.dp, bottom = 10.dp)
                 .clickable {
                     ifIsClicked = true
                     navController.navigate("ContactUsPage")
                 }
         )
-
-//        Image(
-//            painter = picturesImage,
-//            contentDescription = "Pictures",
-//            modifier = Modifier
-//                .align(Alignment.Center)
-//                .offset(y = 370.dp, x = 130.dp)
-//                .height(45.dp)
-//                .width(45.dp)
-//                .clickable {
-//                    ifIsClicked = true
-//                    navController.navigate("PicturesPage")
-//                }
-//        )
 
         val logoutImage = painterResource(id = R.drawable.logout)
         var ifClicked by remember { mutableStateOf(false) }
@@ -182,10 +198,9 @@ fun CampusMap(navController: NavHostController) {
             painter = logoutImage,
             contentDescription = "Logout Image",
             modifier = Modifier
-                .align(Alignment.CenterEnd)
-                .offset(y = 375.dp, x = -50.dp)
-                .height(60.dp)
-                .width(60.dp)
+                .align(Alignment.BottomEnd)
+                .size(100.dp)
+                .padding(end = 40.dp, top = 25.dp)
                 .clickable() {
                     ifClicked = true
                     firebase.signOut()
@@ -193,20 +208,27 @@ fun CampusMap(navController: NavHostController) {
                 }
         )
 
+        val addNewsImage = painterResource(id = R.drawable.database)
         Image(
             painter = addNewsImage,
             contentDescription = "Adding News",
             modifier = Modifier
-                .align(Alignment.Center)
-                .offset(y = 370.dp, x = -130.dp)
-                .height(60.dp)
-                .width(60.dp)
+                .align(Alignment.BottomStart)
+                .padding(start = 30.dp, bottom = 10.dp)
+                .size(60.dp)
                 .clickable {
-                    ifIsClicked = true
-                    navController.navigate("addNewsPage")
+                    val emailAllowed = "k00273673@student.tus.ie"
+                    val currentUser = FirebaseAuth.getInstance().currentUser?.email
+                    println("Email Allowed: $emailAllowed, Current User: $currentUser")
+                    if(emailAllowed == currentUser){
+                        ifIsClicked = true
+                        navController.navigate("addNewsPage")
+                    } else {
+                        navController.navigate("errorPage")
+                    }
                 }
         )
+
     }
 }
-
 

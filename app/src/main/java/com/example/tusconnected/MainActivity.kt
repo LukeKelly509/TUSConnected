@@ -5,7 +5,6 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.ClickableText
@@ -14,14 +13,12 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -77,11 +74,10 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
-
-@Composable
-fun navigateToTUSHubPage(navController: NavController) {
-    navController.navigate("TUSHubPage")
-}
+//@Composable
+//fun navigateToTUSHubPage(navController: NavController) {
+//    navController.navigate("TUSHubPage")
+//}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -90,7 +86,7 @@ fun LoginPage(navController: NavController) {
     var password by remember { mutableStateOf("") }
     var errorMessage by remember { mutableStateOf("") }
 
-    if(errorMessage != null){
+    if (errorMessage != null) {
         Text(text = errorMessage, color = Color.Red)
     }
 
@@ -137,14 +133,16 @@ fun LoginPage(navController: NavController) {
 //            modifier = Modifier.padding(bottom = 8.dp)
         )
 
+        Spacer(modifier = Modifier.padding(top = 10.dp))
+
         Button(
             onClick = {
-                      if(isValidLogin(email, password)){
-                          loginWithEmailAndPassword(email, password, navController)
-                      } else {
-                          navController.navigate("LoginPage")
-                          errorMessage = "Invalid email and or password bro"
-                      }
+                if (isValidLogin(email, password)) {
+                    loginWithEmailAndPassword(email, password, navController)
+                } else {
+//                    navController.navigate("LoginPage")
+                    errorMessage = "Invalid email and or password"
+                }
             },
             modifier = Modifier
                 .fillMaxWidth()
@@ -154,34 +152,34 @@ fun LoginPage(navController: NavController) {
         }
     }
 
-        Box(modifier = Modifier.fillMaxSize()) {
-            Row(
-                modifier = Modifier
-                    .align(Alignment.BottomCenter)
-                    .fillMaxWidth()
-                    .padding(vertical = 20.dp),
-                horizontalArrangement = Arrangement.Center
-            ) {
-                Text(
-                    text = AnnotatedString("Don't have an account yet?"),
-                    color = Color.Black,
-                    style = TextStyle(color = Color.Black),
-                    modifier = Modifier.padding(end = 4.dp)
-                )
 
-                ClickableText(
-                    text = AnnotatedString("Sign Up"),
-                    onClick = {
-                        navController.navigate("SignUpPage")
-                    },
-                    style = TextStyle(color = Color.Blue)
-                )
-            }
+    Box(modifier = Modifier.fillMaxSize()) {
+        Row(
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .fillMaxWidth()
+                .padding(vertical = 20.dp),
+            horizontalArrangement = Arrangement.Center
+        ) {
+            Text(
+                text = AnnotatedString("Don't have an account yet?"),
+                color = Color.Black,
+                style = TextStyle(color = Color.Black),
+                modifier = Modifier.padding(end = 4.dp)
+            )
+
+            ClickableText(
+                text = AnnotatedString("Sign Up"),
+                onClick = {
+                    navController.navigate("SignUpPage")
+                },
+                style = TextStyle(color = Color.Blue)
+            )
         }
+    }
 
 
-        Box(modifier = Modifier.fillMaxWidth()) {
-
+    Box(modifier = Modifier.fillMaxSize()) {
         TopAppBar(
             title = { Text("", color = Color.Black) },
             modifier = Modifier
@@ -193,37 +191,40 @@ fun LoginPage(navController: NavController) {
         val logoImage = painterResource(id = R.drawable.tuslogo)
         Image(
             painter = logoImage,
-            contentDescription = "Logo",
+            contentDescription = "logo image",
             modifier = Modifier
-                .align(Alignment.CenterStart)
-                .offset(y = -75.dp, x = -170.dp)
-                .scale(0.2f)
+                .align(Alignment.TopStart)
+                .padding(start = 0.dp, top = 4.dp)
+                .size(80.dp)
         )
 
-        val accountLogoImage = painterResource(id = R.drawable.accountlogo)
+
+    val accountLogoImage = painterResource(id = R.drawable.accountlogo)
         Image(
             painter = accountLogoImage,
             contentDescription = "Account Logo",
             modifier = Modifier
-                .align(Alignment.CenterEnd)
-                .offset(y = -75.dp, x = 25.dp)
-                .scale(0.3f)
+                .align(Alignment.TopEnd)
+                .padding(end = 16.dp, top = 16.dp)
+                .size(48.dp)
         )
     }
 }
 
+//checking if both email and password are valid
 fun isValidLogin(email: String, password: String): Boolean {
     return isEmailValid(email) && isPasswordLoginValid(password)
 }
-
+//checking if email is not empty and matches
 fun isEmailValid(email: String): Boolean {
     return email.isNotEmpty() && android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()
 }
-
+//checking if password is not empty and is over 5 characters
 fun isPasswordLoginValid(password: String): Boolean {
     return password.isNotEmpty() && password.length > 5
 }
-
+//firebase login with email and password while using navController to navigate
+//https://firebase.blog/posts/2022/05/adding-firebase-auth-to-jetpack-compose-app/  <- changed updateUI to navController.navigate("TUSHubPage")
 fun loginWithEmailAndPassword(email: String, password: String, navController: NavController) {
     val firebase = FirebaseAuth.getInstance()
     firebase.signInWithEmailAndPassword(email, password)
